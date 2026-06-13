@@ -1,0 +1,16 @@
+{
+  "name": "signal-mcp",
+  "version": "0.1.0",
+  "description": "Signal UW MCP server — underwrite any US address from Claude Desktop or ChatGPT.",
+  "type": "module",
+  "bin": {
+    "signal-mcp": "index.mjs"
+  },
+  "files": ["index.mjs"],
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  }
+}
