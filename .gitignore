@@ -1,0 +1,19 @@
+# Secrets — never commit these
+.env
+.env.*
+*.env
+
+# Supabase local/CLI artifacts
+supabase/.branches
+supabase/.temp
+supabase/.env
+
+# Node
+node_modules/
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

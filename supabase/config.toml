@@ -1,0 +1,15 @@
+# Supabase project config. Links this repo to the Signal UW project so the
+# GitHub integration knows where to deploy migrations + edge functions.
+project_id = "nmguadctlkhunkfhfimb"
+
+[functions.underwrite]
+verify_jwt = true
+
+[functions.keys]
+verify_jwt = false
+
+[functions.stripe-billing]
+verify_jwt = true
+
+[functions.stripe-webhook]
+verify_jwt = false
