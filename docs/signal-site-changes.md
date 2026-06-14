@@ -93,12 +93,69 @@ Keep this section lower-key — MCP is the Pro add-on, not the main path.
 Investor $99 / 75 (MCP access), Institution $249 / 249 ($1.00 per additional
 inquiry, MCP access), plus the Enterprise "Custom Underwriting Agents" tier.
 No change needed here — these are the final numbers. (Lower tiers are hard-capped
-with no overage; only Institution has the $1.00 overage. The billing/credits
-build will meter against these limits.)
+with no overage; only Institution has the $1.00 overage. Billing is now live —
+Stripe products/prices exist and the engine meters against these limits.)
 
 **9. Pages — keep it to three.** Landing (with these sections), **Privacy**, and
 **Terms**. No dashboard/history/billing/downloads pages yet — those come later.
 Make sure Privacy and Terms have real content (not placeholders).
+
+**10. Remove the old free-query gating (IMPORTANT).** The site currently calls two
+Supabase functions — `check-user` and `increment-query` — to count "free queries"
+by email. **Delete all client code that calls them.** They are non-functional
+(they target a table that doesn't exist) and they bypass the real metering. All
+gating now lives in the engine: a signed-in account gets 2 free reports, then the
+engine returns `402 trial_exhausted`; subscribers are metered against their plan
+and get `402 limit_reached` (with `plan_key`, `inquiry_limit`, `period_end`) when
+capped. The chat should rely **only** on the `/underwrite` responses (handle both
+`trial_exhausted` and `limit_reached` → show the paywall). Once the new site is
+live and no longer references these endpoints, the `check-user` / `increment-query`
+functions and the empty `user_credits` / `user_trials` tables will be deleted
+server-side.
+
+**11. Wire the pricing buttons to Stripe Checkout.** Right now the plan buttons do
+nothing. Each paid plan's button (and the paywall's upgrade buttons) should call
+the `stripe-billing` function, which returns a Stripe Checkout URL to redirect to.
+Plan keys: **`casual`, `investor`, `institution`**. Enterprise stays a
+"Schedule a Call" link (no checkout). Requires the user to be signed in (same
+Google session as the chat).
+
+```js
+const BILLING_URL = "https://nmguadctlkhunkfhfimb.supabase.co/functions/v1/stripe-billing";
+const ANON = "sb_publishable_s2huboLvjn2np4XfzP6RVA_2B57s9BI";
+
+// planKey: "casual" | "investor" | "institution"
+async function subscribe(planKey) {
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+  if (!token) {
+    return supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.origin },
+    });
+  }
+  const res = await fetch(BILLING_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", apikey: ANON,
+      Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ action: "checkout", plan_key: planKey }),
+  });
+  const out = await res.json();
+  if (out.url) window.location.href = out.url;        // → Stripe Checkout
+  else alert(out.error || "Could not start checkout. Please try again.");
+}
+```
+
+- Wire: Casual button → `subscribe("casual")`, Investor → `subscribe("investor")`,
+  Institution → `subscribe("institution")`. The paywall's upgrade buttons call the
+  same function.
+- After payment, Stripe returns the user to `/?checkout=success` (or
+  `/?checkout=cancel`). On `?checkout=success`, show a brief "You're subscribed"
+  confirmation and re-fetch billing status (GET `stripe-billing`) so the UI
+  reflects the new plan.
+- **Manage/cancel subscription:** for signed-in subscribers, a "Manage billing"
+  link can POST `{action:"portal"}` to the same function and redirect to the
+  returned `url` (Stripe Billing Portal).
 
 ## Engine facts (reference)
 - Base: `https://nmguadctlkhunkfhfimb.supabase.co/functions/v1`
