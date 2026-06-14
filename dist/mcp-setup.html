@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Use Signal inside Claude — Setup Guide</title>
+<style>
+  :root{
+    --bg:#0b0e14; --panel:#131825; --panel-2:#1a2030; --line:#252c3d;
+    --text:#e7ecf5; --muted:#9aa6bd; --accent:#4f8cff; --accent-2:#2dd4a7;
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:radial-gradient(1200px 700px at 50% -200px,#16203a 0%,var(--bg) 60%);
+    color:var(--text); font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:760px; margin:0 auto; padding:56px 22px 90px}
+  .eyebrow{letter-spacing:.18em; text-transform:uppercase; font-size:12px; color:var(--accent-2); font-weight:700; margin:0 0 10px}
+  h1{font-size:38px; line-height:1.15; margin:0 0 14px; font-weight:800; letter-spacing:-.01em}
+  .lede{color:var(--muted); font-size:18px; margin:0 0 14px}
+  .pill{display:inline-block; font-size:12.5px; color:var(--muted); border:1px solid var(--line); background:var(--panel); padding:6px 12px; border-radius:999px; margin:4px 6px 4px 0}
+  .steps{margin:38px 0 0; padding:0; list-style:none; counter-reset:step}
+  .step{position:relative; background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:22px 22px 22px 70px; margin:0 0 16px}
+  .step::before{
+    counter-increment:step; content:counter(step);
+    position:absolute; left:18px; top:20px; width:34px; height:34px; border-radius:50%;
+    background:linear-gradient(180deg,var(--accent),#2f6fe0); color:#fff; font-weight:800;
+    display:flex; align-items:center; justify-content:center; font-size:16px;
+  }
+  .step h3{margin:2px 0 8px; font-size:19px}
+  .step p{margin:0 0 8px; color:var(--muted)}
+  .step p strong{color:var(--text)}
+  a.btn{
+    display:inline-block; margin-top:10px; background:linear-gradient(180deg,var(--accent),#2f6fe0);
+    color:#fff; text-decoration:none; font-weight:700; padding:13px 22px; border-radius:12px;
+  }
+  a.btn.secondary{background:var(--panel-2); border:1px solid var(--line)}
+  a.inline{color:var(--accent); text-decoration:none; border-bottom:1px solid rgba(79,140,255,.4)}
+  code,.kbd{background:var(--panel-2); border:1px solid var(--line); border-radius:7px; padding:2px 7px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:14px; color:#cdd7ee}
+  .prompt{background:var(--panel-2); border:1px dashed var(--line); border-radius:12px; padding:14px 16px; color:#cdd7ee; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:14.5px; margin:10px 0 0}
+  .note{background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent-2); border-radius:12px; padding:16px 18px; margin:30px 0 0; color:var(--muted); font-size:15px}
+  .note strong{color:var(--text)}
+  .faq{margin-top:44px}
+  .faq h2{font-size:22px; margin:0 0 14px}
+  details{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 18px; margin:0 0 10px}
+  summary{cursor:pointer; font-weight:600; color:var(--text)}
+  details p{color:var(--muted); margin:10px 0 0}
+  .foot{margin-top:54px; color:var(--muted); font-size:14px; text-align:center}
+  .foot a{color:var(--accent); text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Setup Guide</p>
+  <h1>Use Signal inside Claude</h1>
+  <p class="lede">Ask Claude to underwrite any US address and get the ARV, estimated rent, and comps back in the chat. Setup takes about 3 minutes — no technical know-how required.</p>
+  <div>
+    <span class="pill">⏱ ~3 minutes</span>
+    <span class="pill">🖥 Works on Mac &amp; Windows</span>
+    <span class="pill">🔒 Your data stays yours</span>
+  </div>
+
+  <ol class="steps">
+    <li class="step">
+      <h3>Install the Claude desktop app</h3>
+      <p>Signal connects to the <strong>Claude desktop app</strong> (not the website). If you don't have it yet, download and install it, then sign in.</p>
+      <a class="btn secondary" href="https://claude.ai/download" target="_blank" rel="noopener">Download Claude Desktop →</a>
+    </li>
+
+    <li class="step">
+      <h3>Get your Signal API key</h3>
+      <p>Sign in to your Signal account, open <strong>Account → API Keys</strong>, and click <strong>Generate key</strong>. Copy the key it shows you (it's only shown once — keep it somewhere safe).</p>
+      <a class="btn secondary" href="https://www.signaluw.com/account" target="_blank" rel="noopener">Open my account →</a>
+      <p style="margin-top:10px">MCP access is included on the Investor and Institution plans.</p>
+    </li>
+
+    <li class="step">
+      <h3>Download the Signal extension</h3>
+      <p>This is a single file that installs Signal into Claude in one click — no settings to edit.</p>
+      <a class="btn" href="Signal.mcpb" download>Download Signal.mcpb →</a>
+    </li>
+
+    <li class="step">
+      <h3>Open it &amp; install</h3>
+      <p><strong>Double-click the <code>Signal.mcpb</code> file</strong> you just downloaded. Claude will open and ask if you want to install the <strong>Signal Underwriting</strong> extension — click <strong>Install</strong>.</p>
+      <p>If double-clicking doesn't open Claude: open Claude, go to <span class="kbd">Settings → Extensions</span>, click <strong>Install Extension…</strong>, and choose the file from your Downloads folder.</p>
+    </li>
+
+    <li class="step">
+      <h3>Paste your API key</h3>
+      <p>Claude will ask for your <strong>Signal API Key</strong>. Paste the key from Step 2 into the box and save. That's the only setting.</p>
+    </li>
+
+    <li class="step">
+      <h3>Ask Claude to underwrite</h3>
+      <p>Start a new chat in Claude and just ask. For example:</p>
+      <div class="prompt">Underwrite 1112 E Malibu Dr, Tempe, AZ 85282</div>
+      <p style="margin-top:10px">Claude will return the ARV, estimated rent, value ranges, and the comps Signal used. A fresh address takes about 20–40 seconds; repeats are instant.</p>
+    </li>
+  </ol>
+
+  <div class="note">
+    <strong>What can I ask?</strong> Try things like "What's the ARV and rent on &lt;address&gt;?", "Compare the rent on these three addresses," or "Show me my recent underwritings." Claude uses two Signal tools: <code>underwrite_property</code> and <code>get_history</code>.
+  </div>
+
+  <div class="faq">
+    <h2>Troubleshooting</h2>
+    <details><summary>I don't see Signal in Claude after installing.</summary>
+      <p>Fully quit and reopen the Claude desktop app. Then check <span class="kbd">Settings → Extensions</span> — "Signal Underwriting" should be listed and enabled.</p>
+    </details>
+    <details><summary>It says my API key is invalid.</summary>
+      <p>Re-copy the key from your account page (Account → API Keys) and re-enter it in <span class="kbd">Settings → Extensions → Signal Underwriting</span>. Make sure there are no extra spaces. If you revoked the key, generate a new one.</p>
+    </details>
+    <details><summary>Can I use this in the Claude website, ChatGPT, or Gemini?</summary>
+      <p>This one-click extension is for the <strong>Claude desktop app</strong>. You can always use Signal with no setup at all right on our website. ChatGPT support (for paid ChatGPT plans) is coming; the standard Gemini app doesn't support custom tools yet.</p>
+    </details>
+    <details><summary>Is my API key safe?</summary>
+      <p>Yes. The key is stored by Claude on your own computer and is only used to talk to Signal. It identifies your account and counts against your plan — treat it like a password and don't share it.</p>
+    </details>
+    <details><summary>How do I remove it?</summary>
+      <p>In Claude, go to <span class="kbd">Settings → Extensions</span>, find Signal Underwriting, and toggle it off or uninstall it.</p>
+    </details>
+  </div>
+
+  <p class="foot">Need a hand? Book a quick onboarding call or email <a href="mailto:team@signaluw.com">team@signaluw.com</a>.</p>
+</div>
+</body>
+</html>
