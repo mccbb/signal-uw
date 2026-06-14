@@ -206,6 +206,32 @@ UX requirements:
 - Link to this page from the nav account menu and from the MCP setup page's "Get your
   API key" step.
 
+**13. Add a "Use in Claude" setup page + host the download.** This is the page that
+walks a non-technical user through installing the Claude extension. Two parts:
+
+a) **Host the extension file.** Place the provided `Signal.mcpb` file (≈3.2 MB,
+   given to you by the team — Bolt can't generate it) into the site's **public/static
+   assets** so it's served at a stable URL, e.g. `https://www.signaluw.com/Signal.mcpb`.
+   When the file is updated later, just replace it at the same path.
+
+b) **Add a setup page** at a route like `/setup` (or `/use-in-claude`). You can drop
+   in the ready-made page `mcp-setup.html` as-is, or rebuild it natively to match the
+   site — either way it must cover these 6 steps, in order:
+   1. Install the **Claude desktop app** (link `https://claude.ai/download`) — note it's the desktop app, not the website.
+   2. **Get your Signal API key** — link to the account API Keys section from item 12.
+   3. **Download `Signal.mcpb`** — button links to the hosted file from (a).
+   4. **Double-click the file → Claude opens → click Install** (fallback: Claude → Settings → Extensions → Install Extension…).
+   5. **Paste your Signal API key** when Claude prompts for it.
+   6. **Ask Claude:** e.g. *"Underwrite 1112 E Malibu Dr, Tempe, AZ 85282."*
+   Include short troubleshooting: restart Claude if it doesn't appear; re-paste the key if it says invalid; this is the Claude desktop app only (ChatGPT support coming, standard Gemini app not supported — the website works for everyone).
+
+- **Link to this page** from: the navbar (e.g. an "Use in Claude" / "MCP" link), the
+  existing MCP section's call-to-action on the landing page (replace the raw config
+  block with a "Set up in Claude →" button pointing here), and the API Keys section.
+- **Account dropdown (logged-in users):** add a **"Use in Claude"** item linking to
+  `/setup`, placed **directly below "API Keys" and above "Manage billing"**. Final
+  menu order: account info → API Keys → Use in Claude → Manage billing → Sign out.
+
 ## Engine facts (reference)
 - Base: `https://nmguadctlkhunkfhfimb.supabase.co/functions/v1`
 - `POST /underwrite { address }` (Bearer = Google session) → 202 job / 200 cached / 401 need_signin / 402 trial_exhausted
