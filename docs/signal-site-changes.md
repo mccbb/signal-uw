@@ -157,6 +157,55 @@ async function subscribe(planKey) {
   link can POST `{action:"portal"}` to the same function and redirect to the
   returned `url` (Stripe Billing Portal).
 
+**12. Add an "API Keys" section to the logged-in account area (for MCP).** Users
+need a Signal API key to use the Claude/MCP extension. The backend `keys` function
+already does everything — this is UI only. Put it on an account page/section that's
+only visible when signed in (e.g., `/account`, or an "API Keys" tab). MCP access is
+an Investor+ perk, so optionally only show this to plans with `mcp_access` (from
+GET `stripe-billing`), but minting itself works for any signed-in user.
+
+Endpoint: `https://nmguadctlkhunkfhfimb.supabase.co/functions/v1/keys`
+- `GET` → `{ keys: [{ id, key_prefix, label, created_at, last_used_at, revoked }] }`
+- `POST { label? }` → mints a key, returns `{ api_key, key_prefix, label }` — **the
+  full `api_key` is returned ONCE and never again.**
+- `POST { action:"revoke", id }` → revokes a key.
+
+```js
+const KEYS_URL = "https://nmguadctlkhunkfhfimb.supabase.co/functions/v1/keys";
+const ANON = "sb_publishable_s2huboLvjn2np4XfzP6RVA_2B57s9BI";
+
+async function authHeaders() {
+  const { data } = await supabase.auth.getSession();
+  return { "Content-Type": "application/json", apikey: ANON,
+    Authorization: `Bearer ${data.session?.access_token}` };
+}
+async function listKeys() {
+  const r = await fetch(KEYS_URL, { headers: await authHeaders() });
+  return (await r.json()).keys || [];
+}
+async function createKey(label) {                 // returns { api_key, ... } ONCE
+  const r = await fetch(KEYS_URL, { method: "POST", headers: await authHeaders(),
+    body: JSON.stringify({ label: label || null }) });
+  return r.json();
+}
+async function revokeKey(id) {
+  await fetch(KEYS_URL, { method: "POST", headers: await authHeaders(),
+    body: JSON.stringify({ action: "revoke", id }) });
+}
+```
+
+UX requirements:
+- Show the user's existing keys as a list: the `key_prefix` (e.g. `sgl_xxxx…`), `label`,
+  created date, last-used date, and a **Revoke** button per row. (You only ever get
+  the prefix back, never the full key — that's expected.)
+- A **"Generate new key"** button → optional label input → call `createKey()` →
+  display the returned `api_key` **once** in a copyable box with a **Copy** button and
+  a clear warning: *"Copy this now — for your security it won't be shown again."*
+  After they copy/dismiss, refresh the list.
+- Never store the raw key in app state longer than needed to display it; never log it.
+- Link to this page from the nav account menu and from the MCP setup page's "Get your
+  API key" step.
+
 ## Engine facts (reference)
 - Base: `https://nmguadctlkhunkfhfimb.supabase.co/functions/v1`
 - `POST /underwrite { address }` (Bearer = Google session) → 202 job / 200 cached / 401 need_signin / 402 trial_exhausted
