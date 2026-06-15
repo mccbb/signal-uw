@@ -5,7 +5,10 @@ const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 // Overridable via the REFINE_MODEL secret so a model retirement is a config change,
 // not a redeploy. claude-sonnet-4-20250514 was retired 2026-06-15; default updated.
 export const REFINE_MODEL = Deno.env.get("REFINE_MODEL") ?? "claude-sonnet-4-6";
-export const REFINE_MAX_TOKENS = 1000;
+// Raised from the spec's 1000 to 4000 on 2026-06-15: at 1000 the model's JSON
+// (7 comps with ai_notes + 2 excluded entries) was truncated mid-object
+// (stop_reason=max_tokens), breaking the parse. 4000 gives headroom to finish.
+export const REFINE_MAX_TOKENS = 4000;
 // Temperature 0 → the model takes its single most-likely path every time, so the
 // same comps produce the same qualitative weights run-to-run (near-deterministic).
 export const REFINE_TEMPERATURE = 0;
@@ -162,13 +165,6 @@ async function liveRefine(payload: RefinePayload): Promise<RefineResult> {
 
   const data = await res.json();
   const text: string = data?.content?.[0]?.text ?? "";
-  // TEMP DIAGNOSTIC (remove after confirming parse failures): logs why the
-  // response may be unparseable. stop_reason "max_tokens" => truncated output.
-  console.log(
-    `[refine diagnostic] stop_reason=${data?.stop_reason} ` +
-    `output_tokens=${data?.usage?.output_tokens} text_len=${text.length} ` +
-    `text_tail=${JSON.stringify(text.slice(-120))}`,
-  );
   return parseRefineJson(text);
 }
 
