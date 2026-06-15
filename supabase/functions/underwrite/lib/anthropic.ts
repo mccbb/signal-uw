@@ -162,6 +162,13 @@ async function liveRefine(payload: RefinePayload): Promise<RefineResult> {
 
   const data = await res.json();
   const text: string = data?.content?.[0]?.text ?? "";
+  // TEMP DIAGNOSTIC (remove after confirming parse failures): logs why the
+  // response may be unparseable. stop_reason "max_tokens" => truncated output.
+  console.log(
+    `[refine diagnostic] stop_reason=${data?.stop_reason} ` +
+    `output_tokens=${data?.usage?.output_tokens} text_len=${text.length} ` +
+    `text_tail=${JSON.stringify(text.slice(-120))}`,
+  );
   return parseRefineJson(text);
 }
 
