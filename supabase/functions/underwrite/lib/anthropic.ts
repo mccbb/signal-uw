@@ -2,7 +2,9 @@
 // (MOCK_EXTERNAL != "false"); flip MOCK_EXTERNAL=false + set ANTHROPIC_API_KEY
 // to go live. Model and max_tokens are fixed by the spec.
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
-export const REFINE_MODEL = "claude-sonnet-4-20250514";
+// Overridable via the REFINE_MODEL secret so a model retirement is a config change,
+// not a redeploy. claude-sonnet-4-20250514 was retired 2026-06-15; default updated.
+export const REFINE_MODEL = Deno.env.get("REFINE_MODEL") ?? "claude-sonnet-4-6";
 export const REFINE_MAX_TOKENS = 1000;
 // Temperature 0 → the model takes its single most-likely path every time, so the
 // same comps produce the same qualitative weights run-to-run (near-deterministic).
