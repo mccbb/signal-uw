@@ -13,3 +13,11 @@ verify_jwt = true
 
 [functions.stripe-webhook]
 verify_jwt = false
+
+# Owner-only usage dashboard data source. JWT verified, then owner-id checked.
+[functions.admin-stats]
+verify_jwt = true
+
+# Fired by Postgres triggers; auth via x-notify-secret shared secret.
+[functions.notify-owner]
+verify_jwt = false
